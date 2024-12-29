@@ -5,6 +5,7 @@ let formData = {
 
 const feedbackFormEl = document.querySelector('.feedback-form');
 
+// Ініціалізація форми зі збереженими даними
 (() => {
   try {
     const storageData = JSON.parse(localStorage.getItem('feedback-form-state'));
@@ -14,16 +15,18 @@ const feedbackFormEl = document.querySelector('.feedback-form');
     }
 
     formData = storageData;
-    console.log(formData);
 
     for (const key in storageData) {
-      feedbackFormEl.elements[key].value = storageData[key];
+      if (feedbackFormEl.elements[key]) {
+        feedbackFormEl.elements[key].value = storageData[key];
+      }
     }
   } catch (error) {
-    console.log(error);
+    console.error('Error parsing storage data:', error);
   }
 })();
 
+// Обробка введення даних у форму
 const onFeedbackFormElInput = event => {
   const { value, name } = event.target;
 
@@ -32,6 +35,7 @@ const onFeedbackFormElInput = event => {
   localStorage.setItem('feedback-form-state', JSON.stringify(formData));
 };
 
+// Обробка сабміту форми
 const onFeedbackFormElSubmit = event => {
   event.preventDefault();
 
@@ -39,13 +43,16 @@ const onFeedbackFormElSubmit = event => {
 
   if (isEmptyField) {
     alert('Fill please all fields');
-  } else {
-    console.log(formData);
-
-    feedbackFormEl.reset();
-    localStorage.removeItem('feedback-form-state');
+    return;
   }
+
+  console.log('Submitted data:', formData);
+
+  feedbackFormEl.reset();
+  localStorage.removeItem('feedback-form-state');
+  formData = { email: '', message: '' }; // Очищення formData
 };
 
+// Додавання слухачів подій
 feedbackFormEl.addEventListener('input', onFeedbackFormElInput);
 feedbackFormEl.addEventListener('submit', onFeedbackFormElSubmit);
